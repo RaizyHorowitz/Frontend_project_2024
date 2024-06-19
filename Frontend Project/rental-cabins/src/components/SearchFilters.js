@@ -1,10 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const SearchFilters = ({ onSearch }) => {
+  const [locations, setLocations] = useState([]);
   const [location, setLocation] = useState('');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [people, setPeople] = useState(1);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await axios.get('https://api.example.com/locations');
+        setLocations(response.data);
+      } catch (error) {
+        console.error('Error fetching locations:', error);
+      }
+    };
+
+    fetchLocations();
+  }, []);
 
   const handleSearch = () => {
     onSearch({ location, checkIn, checkOut, people });
@@ -16,11 +31,9 @@ const SearchFilters = ({ onSearch }) => {
         Location:
         <select value={location} onChange={(e) => setLocation(e.target.value)}>
           <option value="">Select Location</option>
-          <option value="North">North</option>
-          <option value="South">South</option>
-          <option value="Central">Central</option>
-          <option value="Jerusalem">Jerusalem</option>
-          <option value="Mitzpe Ramon">Mitzpe Ramon</option>
+          {locations.map((loc) => (
+            <option key={loc} value={loc}>{loc}</option>
+          ))}
         </select>
       </label>
       <label>
